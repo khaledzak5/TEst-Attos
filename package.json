@@ -28,9 +28,9 @@
   },
   "dependencies": {
     "@dfinity/agent": "^3.2.1",
-    "@dfinity/auth-client": "^3.2.1",
+    "@dfinity/auth-client": "^3.2.4",
     "@dfinity/candid": "^3.2.1",
-    "@dfinity/principal": "^3.2.1",
+    "@dfinity/principal": "^3.2.4",
     "@dhiwise/component-tagger": "^1.0.10",
     "@radix-ui/react-slot": "^1.2.3",
     "@reduxjs/toolkit": "^2.6.1",
