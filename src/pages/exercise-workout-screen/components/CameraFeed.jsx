@@ -51,12 +51,22 @@ const CameraFeed = ({
     const name = (selectedExercise?.name || '').toLowerCase().replace(/[^a-z]/g, '');
     return name.includes('burpee');
   })();
+  // Add Jumping Jacks detection
+  const isJumpingJacksSelected = (() => {
+    const name = (selectedExercise?.name || '').toLowerCase().replace(/[^a-z]/g, '');
+    return name.includes('jumping') && name.includes('jack');
+  })();
+  // Add Side Plank detection
+  const isSidePlankSelected = (() => {
+    const name = (selectedExercise?.name || '').toLowerCase().replace(/[^a-z]/g, '');
+    return name.includes('side') && name.includes('plank');
+  })();
 
   // Initialize MediaPipe pose detection
   const initializePoseDetection = async () => {
     try {
       // Only initialize for supported exercises
-      if (!isPushUpsSelected && !isPlankSelected && !isSquatSelected && !isLungesSelected && !isBurpeesSelected) {
+      if (!isPushUpsSelected && !isPlankSelected && !isSquatSelected && !isLungesSelected && !isBurpeesSelected && !isJumpingJacksSelected && !isSidePlankSelected) {
         return;
       }
 
@@ -69,6 +79,8 @@ const CameraFeed = ({
           isSquatSelected ? 'squats' :
           isLungesSelected ? 'lunges' :
           isBurpeesSelected ? 'burpees' :
+          isJumpingJacksSelected ? 'jumpingjacks' :
+          isSidePlankSelected ? 'sideplank' :
           'pushups'
         );
         // Set up callbacks
@@ -129,7 +141,7 @@ const CameraFeed = ({
         isActive &&
         poseDetectionRef.current &&
         videoRef.current &&
-        (isPushUpsSelected || isPlankSelected || isSquatSelected || isLungesSelected || isBurpeesSelected)
+        (isPushUpsSelected || isPlankSelected || isSquatSelected || isLungesSelected || isBurpeesSelected || isJumpingJacksSelected || isSidePlankSelected)
       ) {
         if (videoRef.current.readyState >= 2) {
           await poseDetectionRef.current.processFrame(videoRef.current);
@@ -238,12 +250,14 @@ const CameraFeed = ({
 
   // Reset counter when exercise changes
   useEffect(() => {
-    if (poseDetectionRef.current && (isPushUpsSelected || isPlankSelected || isSquatSelected || isLungesSelected || isBurpeesSelected)) {
+    if (poseDetectionRef.current && (isPushUpsSelected || isPlankSelected || isSquatSelected || isLungesSelected || isBurpeesSelected || isJumpingJacksSelected || isSidePlankSelected)) {
       poseDetectionRef.current.setExerciseMode(
         isPlankSelected ? 'plank' :
         isSquatSelected ? 'squats' :
         isLungesSelected ? 'lunges' :
         isBurpeesSelected ? 'burpees' :
+        isJumpingJacksSelected ? 'jumpingjacks' :
+        isSidePlankSelected ? 'sideplank' :
         'pushups'
       );
       poseDetectionRef.current.resetCounter();
@@ -318,15 +332,17 @@ const CameraFeed = ({
         </Button>
       </div>
       {/* Stats Overlay - Push-Ups: reps, Plank: time */}
-      {(isPushUpsSelected || isPlankSelected || isSquatSelected || isLungesSelected || isMountainClimbersSelected) && isActive && (
+      {(isPushUpsSelected || isPlankSelected || isSquatSelected || isLungesSelected || isMountainClimbersSelected || isJumpingJacksSelected || isSidePlankSelected) && isActive && (
         <div className="absolute top-4 left-4 bg-black/70 rounded-lg p-3 text-white">
           <div className="text-center mb-2">
-            <div className="text-2xl font-bold text-green-400">{isPlankSelected ? (poseDetectionRef.current?.getStats()?.timeSec || 0) : pushupCount}</div>
+            <div className="text-2xl font-bold text-green-400">{(isPlankSelected || isSidePlankSelected) ? (poseDetectionRef.current?.getStats()?.timeSec || 0) : pushupCount}</div>
             <div className="text-xs text-gray-300">
               {isPlankSelected ? 'Plank (sec)' : 
+               isSidePlankSelected ? 'Side Plank (sec)' :
                isSquatSelected ? 'Squats' :
                isLungesSelected ? 'Lunges' :
-               isMountainClimbersSelected ? 'Mountain Climbers' : 'Push-ups'}
+               isMountainClimbersSelected ? 'Mountain Climbers' :
+               isJumpingJacksSelected ? 'Jumping Jacks' : 'Push-ups'}
             </div>
           </div>
           <div className={`text-xs px-2 py-1 rounded text-center ${
@@ -370,10 +386,14 @@ const CameraFeed = ({
       }
 
       {/* Posture Warning Overlay - Only for incorrect posture */}
-      {postureStatus === 'incorrect' && isPlankSelected && (
+      {postureStatus === 'incorrect' && (isPlankSelected || isSidePlankSelected) && (
         <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-red-600/90 text-white px-6 py-3 rounded-lg text-center animate-pulse">
           <div className="font-bold text-lg">⚠️ DANGEROUS POSTURE!</div>
-          <div className="text-sm">Straighten your back / reach proper depth</div>
+          <div className="text-sm">
+            {isPlankSelected ? 'Straighten your back / reach proper depth' : 
+             isSidePlankSelected ? 'Fix your side plank form - keep body straight!' : 
+             'Fix your posture!'}
+          </div>
         </div>
       )}
       {/* Camera Status Indicator */}

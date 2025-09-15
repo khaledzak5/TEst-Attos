@@ -17,6 +17,7 @@ const PER_REP_BASE = {
 // Approximate kcal per minute for isometric/time-based exercises (plank) at 70kg
 const PER_MIN_BASE = {
   plank: 4.5, // kcal per minute
+  sideplank: 4.0, // kcal per minute (slightly less than regular plank)
   // fallback cardio-ish rate
   defaultTime: 6.0
 };

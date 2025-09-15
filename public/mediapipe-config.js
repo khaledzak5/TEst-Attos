@@ -67,6 +67,53 @@ window.MediaPipeConfig = {
     WARNING_COOLDOWN: 2000
   },
   
+  // Jumping Jacks-specific settings
+  JUMPINGJACKS_CONFIG: {
+    // Shoulder abduction angles (shoulder-elbow-wrist) - arms overhead
+    SHOULDER_ABDUCTION_DOWN: 60,    // degrees: arms down (more lenient)
+    SHOULDER_ABDUCTION_UP: 120,     // degrees: arms overhead (more lenient)
+    
+    // Hip abduction angles (hip-knee-ankle) - legs apart
+    HIP_ABDUCTION_DOWN: 25,          // degrees: legs together (more lenient)
+    HIP_ABDUCTION_UP: 30,            // degrees: legs apart (more lenient)
+    
+    // Timing and debouncing
+    MIN_REP_MS: 1000,               // minimum milliseconds between reps (increased for stability)
+    WARNING_COOLDOWN: 2000           // milliseconds between warnings
+  },
+  
+  // Side Plank-specific settings
+  SIDEPLANK_CONFIG: {
+    // Shoulder support angle (shoulder-elbow-wrist) - should be ~90°
+    SHOULDER_ANGLE_MIN: 80,         // degrees: minimum elbow angle
+    SHOULDER_ANGLE_MAX: 100,        // degrees: maximum elbow angle
+    
+    // Torso-hip line (shoulder-hip-ankle) - should be ~180° (straight line)
+    TORSO_ANGLE_MIN: 160,           // degrees: minimum straight line angle
+    TORSO_ANGLE_MAX: 200,           // degrees: maximum straight line angle
+    
+    // Hip position thresholds (normalized units)
+    HIP_SAG_THRESHOLD: 0.05,        // hip sagging tolerance
+    HIP_HIKE_THRESHOLD: 0.05,       // hip hiking tolerance
+    
+    // Elbow alignment (elbow should be under shoulder)
+    ELBOW_ALIGNMENT_THRESHOLD: 0.08, // normalized units
+    
+    // Feet stacking (ankles should be close together)
+    FEET_STACKING_THRESHOLD: 0.1,   // normalized units
+    
+    // Head-neck alignment (ear-shoulder-hip should be ~180°)
+    HEAD_NECK_ANGLE_MIN: 160,       // degrees: minimum head-neck alignment
+    HEAD_NECK_ANGLE_MAX: 200,       // degrees: maximum head-neck alignment
+    
+    // Posture smoothing
+    POSTURE_GOOD_FRAMES: 3,         // consecutive good frames to confirm correct posture
+    POSTURE_BAD_FRAMES: 4,          // consecutive bad frames to confirm incorrect posture
+    
+    // Warning cooldown
+    WARNING_COOLDOWN: 2000          // milliseconds between warnings
+  },
+  
   // Pose landmark indices (MediaPipe standard)
   POSE_LANDMARKS: {
     NOSE: 0,

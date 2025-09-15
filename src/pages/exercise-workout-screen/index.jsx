@@ -52,7 +52,8 @@ const ExerciseWorkoutScreen = () => {
     { id: 1, name: "Push-Ups", category: "Upper Body", difficulty: "Beginner", duration: "3-5 min" },
     { id: 2, name: "Squats", category: "Lower Body", difficulty: "Beginner", duration: "4-6 min" },
     { id: 3, name: "Lunges", category: "Lower Body", difficulty: "Intermediate", duration: "5-7 min" },
-    { id: 4, name: "Burpees", category: "Full Body", difficulty: "Advanced", duration: "6-8 min" }
+    { id: 4, name: "Burpees", category: "Full Body", difficulty: "Advanced", duration: "6-8 min" },
+    { id: 5, name: "Side Plank", category: "Core", difficulty: "Intermediate", duration: "2-4 min" }
   ];
 
   // Timer effect for active workout
@@ -61,7 +62,8 @@ const ExerciseWorkoutScreen = () => {
     // Determine which exercise to evaluate for plank: prefer selectedExercise, fall back to first static exercise
     const effectiveExerciseName = String((selectedExercise || exercises?.[0])?.name || '').toLowerCase();
     const isPlankExercise = effectiveExerciseName.includes('plank');
-    const shouldIncrementTimer = isWorkoutActive && !isPaused && (!isPlankExercise || postureStatus === 'correct');
+    // For plank exercises we rely on pose-detection's onTimeUpdate callback which sets workoutTime directly.
+    const shouldIncrementTimer = isWorkoutActive && !isPaused && !isPlankExercise;
 
     if (shouldIncrementTimer) {
       interval = setInterval(() => {
@@ -101,7 +103,7 @@ const ExerciseWorkoutScreen = () => {
   useEffect(() => {
     if (isWorkoutActive && !isPaused) {
       const name = (currentExercise?.name || '').toLowerCase();
-      if (name.includes('push') || name.includes('squat') || name.includes('lunge') || name.includes('burpee')) {
+      if (name.includes('push') || name.includes('squat') || name.includes('lunge') || name.includes('burpee') || name.includes('jumping')) {
         // For Push-Ups, Squats, Lunges, Burpees: use AI detection count provided by CameraFeed
         setCurrentRep(aiPushupCount);
         setRepsCompleted(aiPushupCount);
@@ -235,6 +237,11 @@ const ExerciseWorkoutScreen = () => {
     console.log('AI Push-up count:', count);
   };
 
+  const handlePlankTimeUpdate = (seconds) => {
+    // Replace workoutTime with the accumulated correct-seconds reported by pose detection
+    setWorkoutTime(seconds);
+  };
+
   const handlePostureChange = (status, landmarks) => {
     setPostureStatus(status);
     console.log('Posture status:', status);
@@ -344,7 +351,7 @@ const ExerciseWorkoutScreen = () => {
     const isPlankExercise = String(name).toLowerCase().includes('plank');
 
     // For rep-based exercises we map aiPushupCount -> reps
-    if (isWorkoutActive && !isPaused && (name.toLowerCase().includes('push') || name.toLowerCase().includes('squat') || name.toLowerCase().includes('lunge') || name.toLowerCase().includes('burpee') || name.toLowerCase().includes('mountain')) ) {
+    if (isWorkoutActive && !isPaused && (name.toLowerCase().includes('push') || name.toLowerCase().includes('squat') || name.toLowerCase().includes('lunge') || name.toLowerCase().includes('burpee') || name.toLowerCase().includes('mountain') || name.toLowerCase().includes('jumping')) ) {
       // Update or create session item for this exercise
       setSessionItems(prev => {
         const copy = [...prev];
@@ -519,6 +526,7 @@ const ExerciseWorkoutScreen = () => {
                   onFormFeedback={handleFormFeedback}
                   onPushupCount={handlePushupCount}
                   onPostureChange={handlePostureChange}
+                  onPlankTimeUpdate={handlePlankTimeUpdate}
                   selectedExercise={currentExercise}
                 />
               </div>
